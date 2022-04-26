@@ -4,6 +4,8 @@
 #include "MapSquare.h"
 #include "FilterGeneric.h"
 #include "FilterOdd.h"
+#include "FilterForTwoDigitPositive.h"
+#include "FilterNonPositive.h"
 #include "ReduceGeneric.h"
 #include "ReduceMinimum.h"
 #include "ReduceGCD.h"
@@ -12,44 +14,47 @@
 
 int main(void){
 
-    std::cout << "map" << std::endl;
+    std::vector<int> L;
 
-    std::vector<int> mapVector = {1, -2, -3};
+    std::string input;
 
-    MapTriple mt;
+    std::getline(std::cin, input);
+
+    input = input + ","; //Appends a comma because below in the code every number in the vector is found be whether it is followed by a comma or not
+
+    std::vector<int> commas; //Vector that stores all the locations of the commas
+    for(int i = 0; i<input.size(); i++){
+        if(input[i] == ','){
+            commas.push_back(i);
+        }
+    }
+
+    std::string subStr;
+    int subStrStart = 0;
+    for(int i = 0; i<commas.size(); i++){
+        
+        subStr = input.substr(subStrStart, commas.at(i));
+        L.push_back(stoi(subStr));
+
+        subStrStart = commas.at(i) + 1;
+    }
+
     MapAbsoluteValue ma;
-    MapSquare ms;
+    MapTriple mt;
 
-    mapVector = ma.map(mapVector); //absolutes
-    mapVector = mt.map(mapVector); //triples
-    mapVector = ms.map(mapVector); //squares
+    L = ma.map(L); //Absolutes
+    L = mt.map(L); //Triples
 
-    std::cout << mapVector.at(0) << std::endl;
-    std::cout << mapVector.at(1) << std::endl;
-    std::cout << mapVector.at(2) << std::endl;
-
-    std::cout << "filter" << std::endl;
-
-    std::vector<int> filterVector = {-1, 1, 2, 3, 5, 6};
-
+    FilterForTwoDigitPositive fp;
     FilterOdd fo;
 
-    filterVector = fo.filter(filterVector);
-
-    std::cout << filterVector.at(0) << std::endl;
-    std::cout << filterVector.at(1) << std::endl;
-    std::cout << filterVector.at(2) << std::endl;
-    std::cout << filterVector.at(3) << std::endl;
-
-    std::cout << "reduce" << std::endl;
-
-    std::vector<int> reduceVector = {24, 28};
+    L = fp.filter(L);
+    L = fo.filter(L);
 
     ReduceMinimum rm;
     ReduceGCD rg;
 
-    std::cout << rm.reduce(reduceVector) << std::endl;
-    std::cout << rg.reduce(reduceVector) << std::endl;
+    std::cout << rm.reduce(L) << " " << rg.reduce(L) << std::endl;
 
     return 0;
 }
